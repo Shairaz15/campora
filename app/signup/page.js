@@ -13,6 +13,7 @@ export default function SignupPage() {
     const [step, setStep] = useState('credentials'); // credentials | profile
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [signedUpUser, setSignedUpUser] = useState(null);
 
     const [credentials, setCredentials] = useState({
         email: '',
@@ -49,7 +50,7 @@ export default function SignupPage() {
             return;
         }
 
-        const { error: authError } = await supabase.auth.signUp({
+        const { data: signUpData, error: authError } = await supabase.auth.signUp({
             email: credentials.email,
             password: credentials.password,
             options: {
@@ -63,6 +64,22 @@ export default function SignupPage() {
             return;
         }
 
+        const signedUpUser = signUpData?.user;
+
+        // If admin email, auto-create profile and skip to dashboard
+        if (credentials.email === ADMIN_EMAIL && signedUpUser) {
+            await supabase.from('users').upsert({
+                id: signedUpUser.id,
+                name: 'Admin',
+                email: credentials.email,
+                role: 'admin',
+            });
+            router.push('/admin');
+            return;
+        }
+
+        // Store user for profile step
+        setSignedUpUser(signedUpUser);
         setStep('profile');
         setLoading(false);
     };
@@ -72,9 +89,14 @@ export default function SignupPage() {
         setLoading(true);
         setError('');
 
-        const { data: { user } } = await supabase.auth.getUser();
+        // Use user from signup OR try getUser
+        let user = signedUpUser;
         if (!user) {
-            setError('Please check your email for verification, then log in.');
+            const { data } = await supabase.auth.getUser();
+            user = data?.user;
+        }
+        if (!user) {
+            setError('Session expired. Try logging in from the login page.');
             setLoading(false);
             return;
         }

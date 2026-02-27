@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { ADMIN_EMAIL } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -36,7 +37,20 @@ export default function LoginPage() {
             .eq('id', data.user.id)
             .single();
 
-        if (profile?.role === 'admin') {
+        // Auto-create admin profile if admin email and no profile exists
+        if (email === ADMIN_EMAIL) {
+            if (!profile) {
+                await supabase.from('users').upsert({
+                    id: data.user.id,
+                    name: 'Admin',
+                    email: email,
+                    role: 'admin',
+                });
+            } else if (profile.role !== 'admin') {
+                await supabase.from('users').update({ role: 'admin' }).eq('id', data.user.id);
+            }
+            router.push('/admin');
+        } else if (profile?.role === 'admin') {
             router.push('/admin');
         } else {
             router.push('/marketplace');
