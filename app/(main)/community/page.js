@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { timeAgo } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/auth';
@@ -14,6 +15,7 @@ export default function CommunityPage() {
     const [expandedPost, setExpandedPost] = useState(null);
     const [newComment, setNewComment] = useState('');
     const supabase = createClient();
+    const router = useRouter();
     const user = getCurrentUser(); // Get current user directly
 
     useEffect(() => {
@@ -85,6 +87,38 @@ export default function CommunityPage() {
 
         setNewComment('');
         fetchPosts();
+    };
+
+    const handleDM = async (postAuthorId) => {
+        if (!user || user.id === postAuthorId) return;
+
+        // Check for existing DM chat (no product)
+        const { data: existing } = await supabase
+            .from('chats')
+            .select('id')
+            .is('product_id', null)
+            .or(`and(buyer_id.eq.${user.id},seller_id.eq.${postAuthorId}),and(buyer_id.eq.${postAuthorId},seller_id.eq.${user.id})`)
+            .single();
+
+        if (existing) {
+            router.push(`/chat/${existing.id}`);
+            return;
+        }
+
+        // Create new DM chat
+        const { data: newChat } = await supabase
+            .from('chats')
+            .insert({
+                product_id: null,
+                buyer_id: user.id,
+                seller_id: postAuthorId,
+            })
+            .select()
+            .single();
+
+        if (newChat) {
+            router.push(`/chat/${newChat.id}`);
+        }
     };
 
     const categoryColors = {
@@ -210,6 +244,14 @@ export default function CommunityPage() {
                                 >
                                     💬 <span>{post.comments?.length || 0} comments</span>
                                 </button>
+                                {user && user.id !== post.user_id && (
+                                    <button
+                                        onClick={() => handleDM(post.user_id)}
+                                        className="flex items-center gap-1 text-[var(--text-secondary)] hover:text-cyan-400 transition-colors ml-auto"
+                                    >
+                                        ✉️ <span>Message</span>
+                                    </button>
+                                )}
                             </div>
 
                             {/* Comments */}

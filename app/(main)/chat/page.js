@@ -85,7 +85,7 @@ export default function ChatListPage() {
                                         </span>
                                     </div>
                                     <p className="text-sm text-[var(--text-secondary)] truncate">
-                                        Re: {chat.product?.title || 'Product'}
+                                        {chat.product?.title ? `Re: ${chat.product.title}` : '💬 Direct Message'}
                                     </p>
                                 </div>
                             </Link>
