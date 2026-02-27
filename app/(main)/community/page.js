@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { formatDistanceToNow } from '@/lib/utils';
+import { timeAgo } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/auth';
 
 export default function CommunityPage() {
@@ -48,10 +48,10 @@ export default function CommunityPage() {
 
     const handleCreatePost = async (e) => {
         e.preventDefault();
-        if (!currentUser) return;
+        if (!user) return;
 
         await supabase.from('community_posts').insert({
-            user_id: currentUser.id,
+            user_id: user.id,
             title: newPost.title,
             description: newPost.description,
             category: newPost.category,
@@ -75,11 +75,11 @@ export default function CommunityPage() {
     };
 
     const handleComment = async (postId) => {
-        if (!newComment.trim() || !currentUser) return;
+        if (!newComment.trim() || !user) return;
 
         await supabase.from('community_comments').insert({
             post_id: postId,
-            user_id: currentUser.id,
+            user_id: user.id,
             comment: newComment.trim(),
         });
 
