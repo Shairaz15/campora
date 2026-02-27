@@ -113,7 +113,7 @@ export default function LoginPage() {
 
                     {/* Demo credentials hint */}
                     <div className="mt-4 px-3 py-2 rounded-lg bg-cyan-500/5 border border-cyan-500/10 text-xs text-[var(--text-secondary)]">
-                        <strong className="text-cyan-400">Demo Admin:</strong> admin@campora.edu / admin123
+                        <strong className="text-cyan-400">Demo Admin:</strong> shairaz102938@gmail.com / admin123
                     </div>
                 </div>
 

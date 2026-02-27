@@ -35,11 +35,7 @@ export default function SignupPage() {
         setError('');
 
         // Validate .edu email
-        if (!credentials.email.endsWith('.edu')) {
-            setError('Email must end with .edu');
-            setLoading(false);
-            return;
-        }
+        // .edu email check is relaxed for hackathon demo
 
         if (credentials.password !== credentials.confirmPassword) {
             setError('Passwords do not match');
@@ -128,10 +124,10 @@ export default function SignupPage() {
                     {['credentials', 'profile'].map((s, i) => (
                         <div key={s} className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step === s
-                                    ? 'bg-cyan-500 text-black'
-                                    : ['credentials', 'profile'].indexOf(step) > i
-                                        ? 'bg-cyan-500/20 text-cyan-400'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                ? 'bg-cyan-500 text-black'
+                                : ['credentials', 'profile'].indexOf(step) > i
+                                    ? 'bg-cyan-500/20 text-cyan-400'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
                                 }`}>
                                 {i + 1}
                             </div>

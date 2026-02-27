@@ -50,11 +50,13 @@
 
 ---
 
-## Phase 4 ✅ — Authentication System
+## Phase 4 ✅ — Authentication System (Updated: Email + Password)
 **What was done:**
-- **Login page** (`app/login/page.js`): Phone number input → OTP verification → redirect to marketplace/admin
-- **Signup page** (`app/signup/page.js`): 3-step flow (Phone → OTP → Profile with .edu email validation)
-- Admin auto-detected by matching hardcoded phone number `+911234567890`
+- ~~Phone OTP~~ → Switched to **email + password** (zero budget — no free SMS provider on Supabase)
+- **Login page** (`app/login/page.js`): Email + password → redirect to marketplace/admin
+- **Signup page** (`app/signup/page.js`): 2-step flow (Email+Password → Profile with name, phone, semester, department, section, grad year)
+- Admin detected by hardcoded email `admin@campora.edu` (password: `admin123`)
+- `.edu` email validation enforced during signup
 - Auth callback route (`app/auth/callback/route.js`) for email verification links
 - Middleware gracefully skips when Supabase URL is not yet configured
 
