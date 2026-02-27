@@ -2,28 +2,25 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { ADMIN_PHONE } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-    const [phone, setPhone] = useState('');
-    const [otp, setOtp] = useState('');
-    const [step, setStep] = useState('phone'); // phone | otp
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
     const supabase = createClient();
 
-    const handleSendOTP = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        const formattedPhone = phone.startsWith('+') ? phone : `+91${phone}`;
-
-        const { error: authError } = await supabase.auth.signInWithOtp({
-            phone: formattedPhone,
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
         });
 
         if (authError) {
@@ -32,38 +29,14 @@ export default function LoginPage() {
             return;
         }
 
-        setPhone(formattedPhone);
-        setStep('otp');
-        setLoading(false);
-    };
-
-    const handleVerifyOTP = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        const { data, error: verifyError } = await supabase.auth.verifyOtp({
-            phone,
-            token: otp,
-            type: 'sms',
-        });
-
-        if (verifyError) {
-            setError(verifyError.message);
-            setLoading(false);
-            return;
-        }
-
-        // Check if user profile exists, if not redirect to onboarding
+        // Check user profile and role
         const { data: profile } = await supabase
             .from('users')
-            .select('id, role')
+            .select('role')
             .eq('id', data.user.id)
             .single();
 
-        if (!profile) {
-            router.push('/signup?onboard=true');
-        } else if (profile.role === 'admin') {
+        if (profile?.role === 'admin') {
             router.push('/admin');
         } else {
             router.push('/marketplace');
@@ -71,8 +44,6 @@ export default function LoginPage() {
 
         setLoading(false);
     };
-
-    const isAdmin = phone === ADMIN_PHONE || phone === ADMIN_PHONE.replace('+91', '');
 
     return (
         <div className="min-h-screen gradient-bg flex items-center justify-center px-4">
@@ -85,97 +56,65 @@ export default function LoginPage() {
                         </div>
                         <span className="text-2xl font-bold neon-text">Campora</span>
                     </div>
-                    <p className="text-[var(--text-secondary)]">Sign in with your phone number</p>
+                    <p className="text-[var(--text-secondary)]">Sign in to your campus marketplace</p>
                 </div>
 
                 {/* Card */}
                 <div className="card p-8">
-                    {step === 'phone' ? (
-                        <form onSubmit={handleSendOTP}>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-                                Phone Number
-                            </label>
-                            <div className="flex gap-2 mb-4">
-                                <div className="input w-20 flex items-center justify-center text-center shrink-0">
-                                    +91
-                                </div>
+                    <form onSubmit={handleLogin}>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                                    Email
+                                </label>
                                 <input
-                                    type="tel"
-                                    className="input flex-1"
-                                    placeholder="Enter your phone number"
-                                    value={phone.replace('+91', '')}
-                                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                                    type="email"
+                                    className="input"
+                                    placeholder="you@university.edu"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    maxLength={10}
-                                    id="phone-input"
+                                    id="login-email"
                                 />
                             </div>
 
-                            {isAdmin && (
-                                <div className="mb-4 px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm">
-                                    🔐 Admin account detected
-                                </div>
-                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                                    Password
+                                </label>
+                                <input
+                                    type="password"
+                                    className="input"
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    minLength={6}
+                                    id="login-password"
+                                />
+                            </div>
+                        </div>
 
-                            {error && (
-                                <div className="mb-4 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                                    {error}
-                                </div>
-                            )}
+                        {error && (
+                            <div className="mt-4 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                                {error}
+                            </div>
+                        )}
 
-                            <button
-                                type="submit"
-                                className="btn-primary w-full py-3"
-                                disabled={loading || phone.replace('+91', '').length < 10}
-                                id="send-otp-btn"
-                            >
-                                {loading ? <span className="spinner mx-auto"></span> : 'Send OTP'}
-                            </button>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleVerifyOTP}>
-                            <p className="text-sm text-[var(--text-secondary)] mb-4">
-                                OTP sent to <span className="text-white font-medium">{phone}</span>
-                            </p>
+                        <button
+                            type="submit"
+                            className="btn-primary w-full py-3 mt-6"
+                            disabled={loading || !email || !password}
+                            id="login-btn"
+                        >
+                            {loading ? <span className="spinner mx-auto"></span> : 'Sign In →'}
+                        </button>
+                    </form>
 
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-                                Enter OTP
-                            </label>
-                            <input
-                                type="text"
-                                className="input mb-4"
-                                placeholder="Enter 6-digit OTP"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                required
-                                maxLength={6}
-                                id="otp-input"
-                            />
-
-                            {error && (
-                                <div className="mb-4 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                                    {error}
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                className="btn-primary w-full py-3 mb-3"
-                                disabled={loading || otp.length < 6}
-                                id="verify-otp-btn"
-                            >
-                                {loading ? <span className="spinner mx-auto"></span> : 'Verify & Sign In'}
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => { setStep('phone'); setOtp(''); setError(''); }}
-                                className="w-full text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
-                            >
-                                ← Change phone number
-                            </button>
-                        </form>
-                    )}
+                    {/* Demo credentials hint */}
+                    <div className="mt-4 px-3 py-2 rounded-lg bg-cyan-500/5 border border-cyan-500/10 text-xs text-[var(--text-secondary)]">
+                        <strong className="text-cyan-400">Demo Admin:</strong> admin@campora.edu / admin123
+                    </div>
                 </div>
 
                 <p className="text-center text-sm text-[var(--text-secondary)] mt-6">

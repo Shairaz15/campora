@@ -1,75 +1,68 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { ADMIN_PHONE } from '@/lib/utils';
+import { ADMIN_EMAIL } from '@/lib/utils';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function SignupPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen gradient-bg flex items-center justify-center"><div className="spinner"></div></div>}>
-            <SignupContent />
-        </Suspense>
-    );
-}
-
-function SignupContent() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const isOnboard = searchParams.get('onboard') === 'true';
     const supabase = createClient();
 
-    const [step, setStep] = useState(isOnboard ? 'profile' : 'phone'); // phone | otp | profile
-    const [phone, setPhone] = useState('');
-    const [otp, setOtp] = useState('');
+    const [step, setStep] = useState('credentials'); // credentials | profile
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const [credentials, setCredentials] = useState({
+        email: '',
+        password: '',
+        confirmPassword: '',
+    });
+
     const [profile, setProfile] = useState({
         name: '',
-        email: '',
+        phone: '',
         semester: '',
         department: '',
         section: '',
         graduation_year: '',
     });
 
-    const handleSendOTP = async (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        const formattedPhone = phone.startsWith('+') ? phone : `+91${phone}`;
-
-        const { error: authError } = await supabase.auth.signInWithOtp({
-            phone: formattedPhone,
-        });
-
-        if (authError) {
-            setError(authError.message);
+        // Validate .edu email
+        if (!credentials.email.endsWith('.edu')) {
+            setError('Email must end with .edu');
             setLoading(false);
             return;
         }
 
-        setPhone(formattedPhone);
-        setStep('otp');
-        setLoading(false);
-    };
+        if (credentials.password !== credentials.confirmPassword) {
+            setError('Passwords do not match');
+            setLoading(false);
+            return;
+        }
 
-    const handleVerifyOTP = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
+        if (credentials.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            setLoading(false);
+            return;
+        }
 
-        const { error: verifyError } = await supabase.auth.verifyOtp({
-            phone,
-            token: otp,
-            type: 'sms',
+        const { error: authError } = await supabase.auth.signUp({
+            email: credentials.email,
+            password: credentials.password,
+            options: {
+                emailRedirectTo: `${window.location.origin}/auth/callback`,
+            },
         });
 
-        if (verifyError) {
-            setError(verifyError.message);
+        if (authError) {
+            setError(authError.message);
             setLoading(false);
             return;
         }
@@ -83,28 +76,20 @@ function SignupContent() {
         setLoading(true);
         setError('');
 
-        // Validate .edu email
-        if (!profile.email.endsWith('.edu')) {
-            setError('Email must end with .edu');
-            setLoading(false);
-            return;
-        }
-
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-            setError('Session expired. Please login again.');
+            setError('Please check your email for verification, then log in.');
             setLoading(false);
             return;
         }
 
-        // Check if this is the admin phone
-        const isAdmin = user.phone === ADMIN_PHONE;
+        const isAdmin = credentials.email === ADMIN_EMAIL;
 
         const { error: insertError } = await supabase.from('users').upsert({
             id: user.id,
             name: profile.name,
-            email: profile.email,
-            phone: user.phone,
+            email: credentials.email,
+            phone: profile.phone,
             semester: profile.semester,
             department: profile.department,
             section: profile.section,
@@ -138,22 +123,20 @@ function SignupContent() {
                     </p>
                 </div>
 
-                {/* Progress indicators */}
+                {/* Progress */}
                 <div className="flex items-center justify-center gap-2 mb-8">
-                    {['phone', 'otp', 'profile'].map((s, i) => (
+                    {['credentials', 'profile'].map((s, i) => (
                         <div key={s} className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step === s
-                                ? 'bg-cyan-500 text-black'
-                                : ['phone', 'otp', 'profile'].indexOf(step) > i
-                                    ? 'bg-cyan-500/20 text-cyan-400'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                    ? 'bg-cyan-500 text-black'
+                                    : ['credentials', 'profile'].indexOf(step) > i
+                                        ? 'bg-cyan-500/20 text-cyan-400'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
                                 }`}>
                                 {i + 1}
                             </div>
-                            {i < 2 && (
-                                <div className={`w-12 h-0.5 ${['phone', 'otp', 'profile'].indexOf(step) > i
-                                    ? 'bg-cyan-500/40'
-                                    : 'bg-[var(--border-color)]'
+                            {i < 1 && (
+                                <div className={`w-16 h-0.5 ${step === 'profile' ? 'bg-cyan-500/40' : 'bg-[var(--border-color)]'
                                     }`} />
                             )}
                         </div>
@@ -161,90 +144,70 @@ function SignupContent() {
                 </div>
 
                 <div className="card p-8">
-                    {/* Step 1: Phone */}
-                    {step === 'phone' && (
-                        <form onSubmit={handleSendOTP}>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-                                Phone Number
-                            </label>
-                            <div className="flex gap-2 mb-4">
-                                <div className="input w-20 flex items-center justify-center text-center shrink-0">
-                                    +91
+                    {/* Step 1: Email + Password */}
+                    {step === 'credentials' && (
+                        <form onSubmit={handleSignUp}>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                                        College Email * <span className="text-cyan-400 text-xs">(.edu only)</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        className="input"
+                                        placeholder="you@university.edu"
+                                        value={credentials.email}
+                                        onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                                        required
+                                        id="signup-email"
+                                    />
                                 </div>
-                                <input
-                                    type="tel"
-                                    className="input flex-1"
-                                    placeholder="Enter phone number"
-                                    value={phone.replace('+91', '')}
-                                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                                    required
-                                    maxLength={10}
-                                    id="signup-phone"
-                                />
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Password *</label>
+                                    <input
+                                        type="password"
+                                        className="input"
+                                        placeholder="Min 6 characters"
+                                        value={credentials.password}
+                                        onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                                        required
+                                        minLength={6}
+                                        id="signup-password"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Confirm Password *</label>
+                                    <input
+                                        type="password"
+                                        className="input"
+                                        placeholder="Re-enter password"
+                                        value={credentials.confirmPassword}
+                                        onChange={(e) => setCredentials({ ...credentials, confirmPassword: e.target.value })}
+                                        required
+                                        id="signup-confirm"
+                                    />
+                                </div>
                             </div>
 
                             {error && (
-                                <div className="mb-4 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                                <div className="mt-4 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                                     {error}
                                 </div>
                             )}
 
                             <button
                                 type="submit"
-                                className="btn-primary w-full py-3"
-                                disabled={loading || phone.replace('+91', '').length < 10}
+                                className="btn-primary w-full py-3 mt-6"
+                                disabled={loading || !credentials.email || !credentials.password}
                             >
-                                {loading ? <span className="spinner mx-auto"></span> : 'Send OTP →'}
+                                {loading ? <span className="spinner mx-auto"></span> : 'Continue →'}
                             </button>
                         </form>
                     )}
 
-                    {/* Step 2: OTP */}
-                    {step === 'otp' && (
-                        <form onSubmit={handleVerifyOTP}>
-                            <p className="text-sm text-[var(--text-secondary)] mb-4">
-                                OTP sent to <span className="text-white font-medium">{phone}</span>
-                            </p>
-
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-                                Enter OTP
-                            </label>
-                            <input
-                                type="text"
-                                className="input mb-4"
-                                placeholder="6-digit OTP"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                required
-                                maxLength={6}
-                                id="signup-otp"
-                            />
-
-                            {error && (
-                                <div className="mb-4 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                                    {error}
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                className="btn-primary w-full py-3 mb-3"
-                                disabled={loading || otp.length < 6}
-                            >
-                                {loading ? <span className="spinner mx-auto"></span> : 'Verify →'}
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => { setStep('phone'); setOtp(''); setError(''); }}
-                                className="w-full text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
-                            >
-                                ← Change phone number
-                            </button>
-                        </form>
-                    )}
-
-                    {/* Step 3: Profile */}
+                    {/* Step 2: Profile */}
                     {step === 'profile' && (
                         <form onSubmit={handleProfileSubmit}>
                             <div className="space-y-4">
@@ -262,17 +225,14 @@ function SignupContent() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-                                        College Email * <span className="text-cyan-400 text-xs">(.edu only)</span>
-                                    </label>
+                                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Phone Number</label>
                                     <input
-                                        type="email"
+                                        type="tel"
                                         className="input"
-                                        placeholder="you@university.edu"
-                                        value={profile.email}
-                                        onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                                        required
-                                        id="signup-email"
+                                        placeholder="+91 9876543210"
+                                        value={profile.phone}
+                                        onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                        id="signup-phone"
                                     />
                                 </div>
 
@@ -339,7 +299,7 @@ function SignupContent() {
                             <button
                                 type="submit"
                                 className="btn-primary w-full py-3 mt-6"
-                                disabled={loading || !profile.name || !profile.email}
+                                disabled={loading || !profile.name}
                             >
                                 {loading ? <span className="spinner mx-auto"></span> : 'Complete Signup →'}
                             </button>
@@ -347,7 +307,7 @@ function SignupContent() {
                     )}
                 </div>
 
-                {step !== 'profile' && (
+                {step === 'credentials' && (
                     <p className="text-center text-sm text-[var(--text-secondary)] mt-6">
                         Already have an account?{' '}
                         <Link href="/login" className="text-cyan-400 hover:underline">
