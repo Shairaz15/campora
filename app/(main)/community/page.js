@@ -11,7 +11,8 @@ export default function CommunityPage() {
     const [loading, setLoading] = useState(true);
     const [showCreate, setShowCreate] = useState(false);
     const [newPost, setNewPost] = useState({ title: '', description: '', category: 'looking-for' });
-    // const [currentUser, setCurrentUser] = useState(null); // Removed currentUser state
+    const [editingPost, setEditingPost] = useState(null);
+    const [editForm, setEditForm] = useState({ title: '', description: '', category: '' });
     const [expandedPost, setExpandedPost] = useState(null);
     const [newComment, setNewComment] = useState('');
     const supabase = createClient();
@@ -19,7 +20,7 @@ export default function CommunityPage() {
     const user = getCurrentUser(); // Get current user directly
 
     useEffect(() => {
-        fetchPosts();
+        fetchPosts(true);
         // getUser(); // Removed getUser call
     }, []);
 
@@ -28,8 +29,8 @@ export default function CommunityPage() {
     //     setCurrentUser(user);
     // };
 
-    const fetchPosts = async () => {
-        setLoading(true); // Added setLoading(true)
+    const fetchPosts = async (isInitial = false) => {
+        if (isInitial) setLoading(true);
         const { data } = await supabase
             .from('community_posts')
             .select(`
@@ -61,32 +62,92 @@ export default function CommunityPage() {
 
         setNewPost({ title: '', description: '', category: 'looking-for' });
         setShowCreate(false);
-        fetchPosts();
+        // Optimistic: add post to top of list immediately
+        const optimisticPost = {
+            id: crypto.randomUUID(),
+            user_id: user.id,
+            title: newPost.title,
+            description: newPost.description,
+            category: newPost.category,
+            upvotes: 0,
+            created_at: new Date().toISOString(),
+            user: { id: user.id, name: user.name, is_verified: user.is_verified },
+            comments: [],
+        };
+        setPosts((prev) => [optimisticPost, ...prev]);
+        // Sync to DB in background
+        await supabase.from('community_posts').insert({
+            user_id: user.id,
+            title: newPost.title,
+            description: newPost.description,
+            category: newPost.category,
+        });
+        fetchPosts(); // Re-fetch to get real IDs
     };
 
     const handleUpvote = async (postId) => {
-        const post = posts.find((p) => p.id === postId);
-        if (!post) return;
-
+        // Optimistic update
+        setPosts((prev) =>
+            prev.map((p) => p.id === postId ? { ...p, upvotes: (p.upvotes || 0) + 1 } : p)
+        );
         await supabase
             .from('community_posts')
-            .update({ upvotes: (post.upvotes || 0) + 1 })
+            .update({ upvotes: (posts.find(p => p.id === postId)?.upvotes || 0) + 1 })
             .eq('id', postId);
-
-        fetchPosts();
     };
 
     const handleComment = async (postId) => {
         if (!newComment.trim() || !user) return;
-
+        const commentText = newComment.trim();
+        setNewComment('');
+        // Optimistic: add comment to the post immediately
+        const optimisticComment = {
+            id: crypto.randomUUID(),
+            comment: commentText,
+            created_at: new Date().toISOString(),
+            user: { id: user.id, name: user.name },
+        };
+        setPosts((prev) =>
+            prev.map((p) =>
+                p.id === postId
+                    ? { ...p, comments: [...(p.comments || []), optimisticComment] }
+                    : p
+            )
+        );
         await supabase.from('community_comments').insert({
             post_id: postId,
             user_id: user.id,
-            comment: newComment.trim(),
+            comment: commentText,
         });
+    };
 
-        setNewComment('');
-        fetchPosts();
+    const handleDeletePost = async (postId) => {
+        if (!confirm('Delete this post?')) return;
+        // Optimistic: remove from list immediately
+        setPosts((prev) => prev.filter((p) => p.id !== postId));
+        await supabase.from('community_posts').delete().eq('id', postId);
+    };
+
+    const startEditPost = (post) => {
+        setEditingPost(post.id);
+        setEditForm({ title: post.title, description: post.description || '', category: post.category });
+    };
+
+    const handleSaveEdit = async (postId) => {
+        // Optimistic: update in list immediately
+        setPosts((prev) =>
+            prev.map((p) =>
+                p.id === postId
+                    ? { ...p, title: editForm.title, description: editForm.description, category: editForm.category }
+                    : p
+            )
+        );
+        setEditingPost(null);
+        await supabase.from('community_posts').update({
+            title: editForm.title,
+            description: editForm.description,
+            category: editForm.category,
+        }).eq('id', postId);
     };
 
     const handleDM = async (postAuthorId) => {
@@ -223,11 +284,43 @@ export default function CommunityPage() {
                             </div>
 
                             {/* Post content */}
-                            <h3 className="font-semibold text-lg mb-1">{post.title}</h3>
-                            {post.description && (
-                                <p className="text-sm text-[var(--text-secondary)] mb-3 whitespace-pre-wrap">
-                                    {post.description}
-                                </p>
+                            {editingPost === post.id ? (
+                                <div className="space-y-3 mb-3">
+                                    <input
+                                        type="text"
+                                        className="input"
+                                        value={editForm.title}
+                                        onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                                    />
+                                    <textarea
+                                        className="input min-h-[60px] resize-y"
+                                        value={editForm.description}
+                                        onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                                    />
+                                    <select
+                                        className="input"
+                                        value={editForm.category}
+                                        onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                                    >
+                                        <option value="looking-for">🔍 Looking For</option>
+                                        <option value="offering">🎁 Offering</option>
+                                        <option value="question">❓ Question</option>
+                                        <option value="discussion">💭 Discussion</option>
+                                    </select>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => setEditingPost(null)} className="btn-secondary flex-1 text-sm">Cancel</button>
+                                        <button onClick={() => handleSaveEdit(post.id)} className="btn-primary flex-1 text-sm">Save</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <h3 className="font-semibold text-lg mb-1">{post.title}</h3>
+                                    {post.description && (
+                                        <p className="text-sm text-[var(--text-secondary)] mb-3 whitespace-pre-wrap">
+                                            {post.description}
+                                        </p>
+                                    )}
+                                </>
                             )}
 
                             {/* Actions */}
@@ -251,6 +344,22 @@ export default function CommunityPage() {
                                     >
                                         ✉️ <span>Message</span>
                                     </button>
+                                )}
+                                {user && user.id === post.user_id && (
+                                    <div className="flex items-center gap-2 ml-auto">
+                                        <button
+                                            onClick={() => startEditPost(post)}
+                                            className="text-[var(--text-secondary)] hover:text-yellow-400 transition-colors text-xs"
+                                        >
+                                            ✏️ Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeletePost(post.id)}
+                                            className="text-[var(--text-secondary)] hover:text-red-400 transition-colors text-xs"
+                                        >
+                                            🗑️ Delete
+                                        </button>
+                                    </div>
                                 )}
                             </div>
 
