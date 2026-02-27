@@ -10,6 +10,8 @@ export default function SellPage() {
     const supabase = createClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [imageFiles, setImageFiles] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
 
     const [form, setForm] = useState({
         title: '',
@@ -20,6 +22,13 @@ export default function SellPage() {
         category: '',
     });
 
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files).slice(0, 4);
+        setImageFiles(files);
+        const previews = files.map((f) => URL.createObjectURL(f));
+        setImagePreviews(previews);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -27,6 +36,23 @@ export default function SellPage() {
 
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
+
+        // Upload images
+        const imageUrls = [];
+        for (const file of imageFiles) {
+            const ext = file.name.split('.').pop();
+            const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('products')
+                .upload(fileName, file);
+
+            if (!uploadError && uploadData) {
+                const { data: urlData } = supabase.storage
+                    .from('products')
+                    .getPublicUrl(uploadData.path);
+                imageUrls.push(urlData.publicUrl);
+            }
+        }
 
         const { error: insertError } = await supabase.from('products').insert({
             seller_id: user.id,
@@ -36,6 +62,7 @@ export default function SellPage() {
             transaction_type: form.transaction_type,
             location_type: form.location_type,
             category: form.category,
+            image_urls: imageUrls,
         });
 
         if (insertError) {
@@ -60,6 +87,31 @@ export default function SellPage() {
 
             <form onSubmit={handleSubmit} className="card p-8">
                 <div className="space-y-5">
+                    {/* Images */}
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                            Product Images <span className="text-xs">(up to 4)</span>
+                        </label>
+                        <div className="flex gap-3 flex-wrap">
+                            {imagePreviews.map((src, i) => (
+                                <div key={i} className="w-20 h-20 rounded-lg overflow-hidden border border-[var(--border-color)]">
+                                    <img src={src} alt="" className="w-full h-full object-cover" />
+                                </div>
+                            ))}
+                            <label className="w-20 h-20 rounded-lg border-2 border-dashed border-[var(--border-color)] flex items-center justify-center cursor-pointer hover:border-cyan-500/50 transition-colors" id="image-upload-label">
+                                <span className="text-2xl text-[var(--text-secondary)]">+</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                    id="image-upload"
+                                />
+                            </label>
+                        </div>
+                    </div>
+
                     {/* Title */}
                     <div>
                         <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Title *</label>
@@ -135,7 +187,7 @@ export default function SellPage() {
                         </div>
                     </div>
 
-                    {/* Price (hidden if swap only) */}
+                    {/* Price */}
                     {form.transaction_type !== 'swap' && (
                         <div>
                             <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Price (₹) *</label>
