@@ -365,19 +365,19 @@ export default function CommunityPage() {
 
                             {/* Comments */}
                             {expandedPost === post.id && (
-                                <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
+                                <div className="mt-4 pt-4 border-t border-[var(--border-color)] space-y-3">
                                     {post.comments?.map((comment) => (
-                                        <div key={comment.id} className="flex gap-3 mb-3">
-                                            <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-xs shrink-0">
-                                                {comment.user?.name?.[0]?.toUpperCase()}
-                                            </div>
-                                            <div>
+                                        <div key={comment.id} className="bg-[#111113] rounded-xl p-4 border border-[#1c1c1f] hover:border-[#2a2a2d] hover:shadow-[0_2px_12px_rgba(0,0,0,0.3)] transition-all duration-200">
+                                            <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-sm font-medium">{comment.user?.name}</span>
-                                                    <span className="text-xs text-[var(--text-secondary)]">{timeAgo(comment.created_at)}</span>
+                                                    <span className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center text-[10px] font-bold text-white">
+                                                        {comment.user?.name?.[0]?.toUpperCase()}
+                                                    </span>
+                                                    <span className="text-sm font-semibold text-white">{comment.user?.name}</span>
                                                 </div>
-                                                <p className="text-sm text-[var(--text-secondary)]">{comment.comment}</p>
+                                                <span className="text-[10px] text-[#555] tracking-wide">{timeAgo(comment.created_at)}</span>
                                             </div>
+                                            <p className="text-sm text-[#A1A1AA] leading-relaxed pl-9">{comment.comment}</p>
                                         </div>
                                     ))}
 
@@ -392,7 +392,7 @@ export default function CommunityPage() {
                                         />
                                         <button
                                             onClick={() => handleComment(post.id)}
-                                            className="btn-primary text-sm px-4"
+                                            className="btn-primary text-sm px-5"
                                         >
                                             Post
                                         </button>
