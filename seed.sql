@@ -1,7 +1,13 @@
 -- Seed script for Campora Demo
 -- Run this in Supabase SQL Editor
 
--- First, ensure the demo users exist
+-- Drop the foreign key linking public.users to auth.users (we use hardcoded auth)
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_id_fkey;
+
+-- Clear old users with these emails (from previous signups)
+DELETE FROM users WHERE email IN ('shairaz102938@gmail.com', 'suhaim10293847@gmail.com', 'sashank10293847@gmail.com');
+
+-- Insert demo users with fixed UUIDs
 INSERT INTO users (id, name, email, phone, semester, department, section, graduation_year, role, is_verified)
 VALUES 
   ('00000000-0000-0000-0000-000000000001', 'Shairaz (Admin)', 'shairaz102938@gmail.com', '8618136168', '4', 'CSE', 'H', 2028, 'admin', true),
