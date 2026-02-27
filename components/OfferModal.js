@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { getCurrentUser } from '@/lib/auth';
 
 export default function OfferModal({ product, onClose, onSuccess }) {
     const [amount, setAmount] = useState(product.price || '');
@@ -14,7 +15,7 @@ export default function OfferModal({ product, onClose, onSuccess }) {
         setLoading(true);
         setError('');
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = getCurrentUser();
         if (!user) return;
 
         // Create offer

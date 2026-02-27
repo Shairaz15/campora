@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { getCurrentUser } from '@/lib/auth';
 
 export default function SwapModal({ product, onClose, onSuccess }) {
     const [userProducts, setUserProducts] = useState([]);
@@ -16,7 +17,7 @@ export default function SwapModal({ product, onClose, onSuccess }) {
     }, []);
 
     const fetchUserProducts = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = getCurrentUser();
         if (!user) return;
 
         const { data } = await supabase
@@ -33,7 +34,7 @@ export default function SwapModal({ product, onClose, onSuccess }) {
         setLoading(true);
         setError('');
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = getCurrentUser();
         if (!user) return;
 
         const { error: swapError } = await supabase.from('swaps').insert({

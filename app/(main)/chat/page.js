@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { timeAgo } from '@/lib/utils';
+import { getCurrentUser } from '@/lib/auth';
 
 export default function ChatListPage() {
     const [chats, setChats] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentUser, setCurrentUser] = useState(null);
+    const currentUser = getCurrentUser();
     const supabase = createClient();
 
     useEffect(() => {
@@ -16,9 +17,7 @@ export default function ChatListPage() {
     }, []);
 
     const fetchChats = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-        setCurrentUser(user);
+        if (!currentUser) return;
 
         const { data } = await supabase
             .from('chats')
@@ -28,7 +27,7 @@ export default function ChatListPage() {
         buyer:users!chats_buyer_id_fkey(id, name),
         seller:users!chats_seller_id_fkey(id, name)
       `)
-            .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+            .or(`buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`)
             .order('created_at', { ascending: false });
 
         setChats(data || []);

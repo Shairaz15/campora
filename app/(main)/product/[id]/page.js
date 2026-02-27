@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { getTransactionBadge, getStatusBadge, timeAgo } from '@/lib/utils';
+import { getCurrentUser } from '@/lib/auth';
 import OfferModal from '@/components/OfferModal';
 import SwapModal from '@/components/SwapModal';
 
@@ -14,7 +15,7 @@ export default function ProductDetailPage() {
 
     const [product, setProduct] = useState(null);
     const [seller, setSeller] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
+    const currentUser = getCurrentUser();
     const [loading, setLoading] = useState(true);
     const [showOffer, setShowOffer] = useState(false);
     const [showSwap, setShowSwap] = useState(false);
@@ -25,8 +26,6 @@ export default function ProductDetailPage() {
     }, [id]);
 
     const fetchProduct = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        setCurrentUser(user);
 
         const { data: productData } = await supabase
             .from('products')

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { timeAgo } from '@/lib/utils';
+import { getCurrentUser } from '@/lib/auth';
 
 export default function ChatRoomPage() {
     const { id: chatId } = useParams();
@@ -14,7 +15,7 @@ export default function ChatRoomPage() {
     const [chat, setChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [currentUser, setCurrentUser] = useState(null);
+    const currentUser = getCurrentUser();
     const [loading, setLoading] = useState(true);
     const [offers, setOffers] = useState([]);
     const [swaps, setSwaps] = useState([]);
@@ -46,8 +47,6 @@ export default function ChatRoomPage() {
     }, [messages]);
 
     const fetchChat = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        setCurrentUser(user);
 
         const { data } = await supabase
             .from('chats')
@@ -208,7 +207,7 @@ export default function ChatRoomPage() {
                             <span>
                                 💰 Offer: ₹{offer.offer_amount} —{' '}
                                 <span className={`font-medium ${offer.status === 'accepted' ? 'text-green-400' :
-                                        offer.status === 'rejected' ? 'text-red-400' : 'text-yellow-400'
+                                    offer.status === 'rejected' ? 'text-red-400' : 'text-yellow-400'
                                     }`}>
                                     {offer.status}
                                 </span>
@@ -231,7 +230,7 @@ export default function ChatRoomPage() {
                             <span>
                                 🔄 Swap —{' '}
                                 <span className={`font-medium ${swap.status === 'accepted' ? 'text-green-400' :
-                                        swap.status === 'rejected' ? 'text-red-400' : 'text-yellow-400'
+                                    swap.status === 'rejected' ? 'text-red-400' : 'text-yellow-400'
                                     }`}>
                                     {swap.status}
                                 </span>
@@ -255,8 +254,8 @@ export default function ChatRoomPage() {
                         <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                             <div
                                 className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${isMine
-                                        ? 'bg-cyan-500/20 text-cyan-100 rounded-br-md'
-                                        : 'bg-[var(--bg-card)] text-white rounded-bl-md border border-[var(--border-color)]'
+                                    ? 'bg-cyan-500/20 text-cyan-100 rounded-br-md'
+                                    : 'bg-[var(--bg-card)] text-white rounded-bl-md border border-[var(--border-color)]'
                                     }`}
                             >
                                 <p className="whitespace-pre-wrap">{msg.message}</p>
