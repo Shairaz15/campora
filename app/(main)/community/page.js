@@ -2,34 +2,37 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { timeAgo } from '@/lib/utils';
+import { formatDistanceToNow } from '@/lib/utils';
+import { getCurrentUser } from '@/lib/auth';
 
 export default function CommunityPage() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showCreate, setShowCreate] = useState(false);
     const [newPost, setNewPost] = useState({ title: '', description: '', category: 'looking-for' });
-    const [currentUser, setCurrentUser] = useState(null);
+    // const [currentUser, setCurrentUser] = useState(null); // Removed currentUser state
     const [expandedPost, setExpandedPost] = useState(null);
     const [newComment, setNewComment] = useState('');
     const supabase = createClient();
+    const user = getCurrentUser(); // Get current user directly
 
     useEffect(() => {
         fetchPosts();
-        getUser();
+        // getUser(); // Removed getUser call
     }, []);
 
-    const getUser = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        setCurrentUser(user);
-    };
+    // const getUser = async () => { // Removed getUser function
+    //     const { data: { user } } = await supabase.auth.getUser();
+    //     setCurrentUser(user);
+    // };
 
     const fetchPosts = async () => {
+        setLoading(true); // Added setLoading(true)
         const { data } = await supabase
             .from('community_posts')
             .select(`
         *,
-        user:users(id, name, is_verified),
+        user:users(id, name, is_verified, avatar_url, role),
         comments:community_comments(
           id,
           comment,

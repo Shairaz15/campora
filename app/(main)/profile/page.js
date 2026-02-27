@@ -13,22 +13,33 @@ export default function ProfilePage() {
     const [stats, setStats] = useState({ buys: 0, sells: 0, swaps: 0 });
     const [saving, setSaving] = useState(false);
 
+    const user = getCurrentUser();
+
     useEffect(() => {
-        fetchProfile();
-    }, []);
+        if (user) {
+            // Fetch the full profile from the 'users' table
+            fetchProfileData(user.id);
+            fetchStats(user.id);
+            // fetchListings(); // Assuming this function will be added later if needed
+        } else {
+            setLoading(false);
+        }
+    }, [user]);
 
-    const fetchProfile = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data } = await supabase.from('users').select('*').eq('id', user.id).single();
+    const fetchProfileData = async (userId) => {
+        const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
+        if (error) {
+            console.error('Error fetching profile:', error);
+            setLoading(false);
+            return;
+        }
         setProfile(data);
         setForm(data || {});
+        setLoading(false);
+    };
 
-        // Fetch stats
+    const fetchStats = async (userId) => {
         const [buyRes, sellRes, swapRes] = await Promise.all([
-            supabase.from('escrow_transactions').select('id', { count: 'exact' }).eq('buyer_id', user.id).eq('status', 'completed'),
-            supabase.from('products').select('id', { count: 'exact' }).eq('seller_id', user.id).eq('status', 'sold'),
             supabase.from('swaps').select('id', { count: 'exact' }).eq('proposer_id', user.id).eq('status', 'completed'),
         ]);
 
