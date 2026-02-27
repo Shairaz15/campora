@@ -70,7 +70,7 @@ export default function VerifyStudents() {
                                                 href={user.id_card_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-block mt-2 text-cyan-400 text-sm hover:underline"
+                                                className="inline-block mt-2 text-red-500 text-sm hover:underline"
                                             >
                                                 📎 View ID Card
                                             </a>
@@ -102,7 +102,7 @@ export default function VerifyStudents() {
             <div className="space-y-3">
                 {allStudents.map((user) => (
                     <div key={user.id} className="card p-4 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-700 to-pink-500 flex items-center justify-center font-bold shrink-0">
                             {user.name?.[0]?.toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -118,7 +118,7 @@ export default function VerifyStudents() {
                         {!user.is_verified && (
                             <button
                                 onClick={() => handleVerify(user.id, true)}
-                                className="text-cyan-400 text-sm hover:underline"
+                                className="text-red-500 text-sm hover:underline"
                             >
                                 Verify
                             </button>

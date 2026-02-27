@@ -38,7 +38,7 @@ export default function ProductCard({ product }) {
             <div className="p-4">
                 <h3 className="font-semibold text-white truncate mb-1">{product.title}</h3>
                 <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-cyan-400">
+                    <span className="text-lg font-bold text-red-500">
                         {product.transaction_type === 'swap' ? 'Swap Only' : `₹${product.price}`}
                     </span>
                     <span className="text-xs text-[var(--text-secondary)] flex items-center gap-1">

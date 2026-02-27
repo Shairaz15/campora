@@ -183,9 +183,9 @@ export default function CommunityPage() {
     };
 
     const categoryColors = {
-        'looking-for': 'bg-blue-500/20 text-blue-400',
+        'looking-for': 'bg-red-600/20 text-red-500',
         'offering': 'bg-green-500/20 text-green-400',
-        'question': 'bg-purple-500/20 text-purple-400',
+        'question': 'bg-red-700/20 text-red-500',
         'discussion': 'bg-orange-500/20 text-orange-400',
     };
 
@@ -266,7 +266,7 @@ export default function CommunityPage() {
                         <div key={post.id} className="card p-5" id={`post-${post.id}`}>
                             {/* Post header */}
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-xs font-bold text-black">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center text-xs font-bold text-black">
                                     {post.user?.name?.[0]?.toUpperCase()}
                                 </div>
                                 <div className="flex-1">
@@ -327,7 +327,7 @@ export default function CommunityPage() {
                             <div className="flex items-center gap-4 text-sm">
                                 <button
                                     onClick={() => handleUpvote(post.id)}
-                                    className="flex items-center gap-1 text-[var(--text-secondary)] hover:text-cyan-400 transition-colors"
+                                    className="flex items-center gap-1 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
                                 >
                                     ▲ <span>{post.upvotes || 0}</span>
                                 </button>
@@ -340,7 +340,7 @@ export default function CommunityPage() {
                                 {user && user.id !== post.user_id && (
                                     <button
                                         onClick={() => handleDM(post.user_id)}
-                                        className="flex items-center gap-1 text-[var(--text-secondary)] hover:text-cyan-400 transition-colors ml-auto"
+                                        className="flex items-center gap-1 text-[var(--text-secondary)] hover:text-red-500 transition-colors ml-auto"
                                     >
                                         ✉️ <span>Message</span>
                                     </button>

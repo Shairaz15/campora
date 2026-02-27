@@ -126,7 +126,7 @@ export default function ProductDetailPage() {
                                 <button
                                     key={i}
                                     onClick={() => setSelectedImage(i)}
-                                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === i ? 'border-cyan-500' : 'border-transparent'
+                                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === i ? 'border-red-600' : 'border-transparent'
                                         }`}
                                 >
                                     <img src={url} alt="" className="w-full h-full object-cover" />
@@ -151,7 +151,7 @@ export default function ProductDetailPage() {
                         <span>🕐 {timeAgo(product.created_at)}</span>
                     </div>
 
-                    <div className="text-3xl font-bold text-cyan-400 mb-6">
+                    <div className="text-3xl font-bold text-red-500 mb-6">
                         {product.transaction_type === 'swap' ? 'Swap Only' : `₹${product.price}`}
                     </div>
 
@@ -167,7 +167,7 @@ export default function ProductDetailPage() {
                         <div className="card p-5 mb-6">
                             <h3 className="font-semibold mb-3">Seller</h3>
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-700 to-pink-500 flex items-center justify-center font-bold">
                                     {seller.name?.[0]?.toUpperCase()}
                                 </div>
                                 <div>
@@ -198,7 +198,7 @@ export default function ProductDetailPage() {
                                     🔄 Propose Swap
                                 </button>
                             )}
-                            <button onClick={handleStartChat} className="btn-secondary w-full py-3 text-base border-cyan-500/30 text-cyan-400" id="chat-seller-btn">
+                            <button onClick={handleStartChat} className="btn-secondary w-full py-3 text-base border-red-600/30 text-red-500" id="chat-seller-btn">
                                 💬 Chat with Seller
                             </button>
                         </div>

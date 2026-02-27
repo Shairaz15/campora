@@ -73,7 +73,7 @@ export default function OfferModal({ product, onClose, onSuccess }) {
                 <p className="text-sm text-[var(--text-secondary)] mb-4">
                     For: <span className="text-white">{product.title}</span>
                     <br />
-                    Listed price: <span className="text-cyan-400">₹{product.price}</span>
+                    Listed price: <span className="text-red-500">₹{product.price}</span>
                 </p>
 
                 <form onSubmit={handleSubmit}>

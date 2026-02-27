@@ -186,7 +186,7 @@ export default function ChatRoomPage() {
                     <button onClick={() => router.push('/chat')} className="text-[var(--text-secondary)] hover:text-white">
                         ←
                     </button>
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-700 to-pink-500 flex items-center justify-center font-bold">
                         {otherUser?.name?.[0]?.toUpperCase()}
                     </div>
                     <div>
@@ -220,7 +220,7 @@ export default function ChatRoomPage() {
                                     </>
                                 )}
                                 {offer.status === 'accepted' && !isSeller && (
-                                    <button onClick={() => handleEscrow(offer)} className="text-cyan-400 hover:underline text-xs">🛡️ Use Escrow</button>
+                                    <button onClick={() => handleEscrow(offer)} className="text-red-500 hover:underline text-xs">🛡️ Use Escrow</button>
                                 )}
                             </div>
                         </div>
@@ -254,7 +254,7 @@ export default function ChatRoomPage() {
                         <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                             <div
                                 className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${isMine
-                                    ? 'bg-cyan-500/20 text-cyan-100 rounded-br-md'
+                                    ? 'bg-red-600/20 text-cyan-100 rounded-br-md'
                                     : 'bg-[var(--bg-card)] text-white rounded-bl-md border border-[var(--border-color)]'
                                     }`}
                             >

@@ -71,7 +71,7 @@ export default function MarketplacePage() {
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
                         className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === cat
-                                ? 'bg-cyan-500 text-black'
+                                ? 'bg-red-600 text-black'
                                 : 'bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-white border border-[var(--border-color)]'
                             }`}
                         id={`cat-${cat.toLowerCase().replace(/\s/g, '-')}`}
@@ -102,7 +102,7 @@ export default function MarketplacePage() {
                                 key={service}
                                 onClick={() => setActiveCategory(service)}
                                 className={`card p-3 text-center text-sm font-medium transition-all ${activeCategory === service
-                                        ? 'border-cyan-500/50 text-cyan-400'
+                                        ? 'border-red-600/50 text-red-500'
                                         : 'text-[var(--text-secondary)] hover:text-white'
                                     }`}
                             >

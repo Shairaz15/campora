@@ -37,7 +37,7 @@ export default function Navbar() {
             <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/marketplace" className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-black text-sm">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center font-bold text-black text-sm">
                         C
                     </div>
                     <span className="font-bold neon-text hidden sm:inline">Campora</span>
@@ -50,7 +50,7 @@ export default function Navbar() {
                             key={link.href}
                             href={link.href}
                             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${pathname === link.href || pathname.startsWith(link.href + '/')
-                                    ? 'bg-cyan-500/10 text-cyan-400'
+                                    ? 'bg-red-600/10 text-red-500'
                                     : 'text-[var(--text-secondary)] hover:text-white hover:bg-white/5'
                                 }`}
                         >
@@ -63,12 +63,12 @@ export default function Navbar() {
                 <div className="flex items-center gap-3">
                     {user && (
                         <div className="hidden sm:flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center text-xs font-bold text-black">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-xs font-bold text-black">
                                 {user.name?.[0] || '?'}
                             </div>
                             <span className="text-sm text-[var(--text-secondary)]">{user.name}</span>
                             {user.role === 'admin' && (
-                                <span className="text-xs px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400">Admin</span>
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-red-600/20 text-red-500">Admin</span>
                             )}
                         </div>
                     )}
@@ -98,7 +98,7 @@ export default function Navbar() {
                             href={link.href}
                             onClick={() => setMenuOpen(false)}
                             className={`block px-3 py-2 rounded-lg text-sm ${pathname === link.href
-                                    ? 'bg-cyan-500/10 text-cyan-400'
+                                    ? 'bg-red-600/10 text-red-500'
                                     : 'text-[var(--text-secondary)]'
                                 }`}
                         >

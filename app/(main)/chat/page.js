@@ -65,7 +65,7 @@ export default function ChatListPage() {
                             <Link
                                 key={chat.id}
                                 href={`/chat/${chat.id}`}
-                                className="card p-4 flex items-center gap-4 hover:border-cyan-500/30"
+                                className="card p-4 flex items-center gap-4 hover:border-red-600/30"
                                 id={`chat-${chat.id}`}
                             >
                                 {/* Product thumbnail */}

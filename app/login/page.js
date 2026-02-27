@@ -42,7 +42,7 @@ export default function LoginPage() {
             <div className="w-full max-w-md page-enter">
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center gap-2 mb-4">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-black text-2xl shadow-[0_0_30px_rgba(34,211,238,0.3)]">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center font-bold text-black text-2xl shadow-[0_0_30px_rgba(225,6,0,0.2)]">
                             C
                         </div>
                         <span className="text-3xl font-bold neon-text">Campora</span>
@@ -109,35 +109,35 @@ export default function LoginPage() {
                     <div className="card p-6 space-y-3">
                         <button
                             onClick={() => handleDemoLogin('shairaz102938@gmail.com', 'admin123')}
-                            className="w-full p-3 rounded-xl border border-cyan-500/20 bg-cyan-500/5 hover:bg-cyan-500/10 hover:border-cyan-400/50 transition-all text-left flex items-center justify-between group"
+                            className="w-full p-3 rounded-xl border border-red-600/20 bg-red-600/5 hover:bg-red-600/10 hover:border-red-500/50 transition-all text-left flex items-center justify-between group"
                         >
                             <div>
-                                <div className="font-bold text-cyan-400 flex items-center gap-2">🛡️ Log in as Admin</div>
+                                <div className="font-bold text-red-500 flex items-center gap-2">🛡️ Log in as Admin</div>
                                 <div className="text-xs text-[var(--text-secondary)] mt-0.5">shairaz102938@gmail.com</div>
                             </div>
-                            <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                            <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                         </button>
 
                         <button
                             onClick={() => handleDemoLogin('suhaim10293847@gmail.com', 'student123')}
-                            className="w-full p-3 rounded-xl border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 hover:border-purple-400/50 transition-all text-left flex items-center justify-between group"
+                            className="w-full p-3 rounded-xl border border-red-700/20 bg-red-700/5 hover:bg-red-700/10 hover:border-red-500/50 transition-all text-left flex items-center justify-between group"
                         >
                             <div>
-                                <div className="font-bold text-purple-400 flex items-center gap-2">🎓 Log in as Student 1</div>
+                                <div className="font-bold text-red-500 flex items-center gap-2">🎓 Log in as Student 1</div>
                                 <div className="text-xs text-[var(--text-secondary)] mt-0.5">suhaim10293847@gmail.com</div>
                             </div>
-                            <span className="text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                            <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                         </button>
 
                         <button
                             onClick={() => handleDemoLogin('sashank10293847@gmail.com', 'student123')}
-                            className="w-full p-3 rounded-xl border border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 hover:border-blue-400/50 transition-all text-left flex items-center justify-between group"
+                            className="w-full p-3 rounded-xl border border-red-600/20 bg-red-600/5 hover:bg-red-600/10 hover:border-red-500/50 transition-all text-left flex items-center justify-between group"
                         >
                             <div>
-                                <div className="font-bold text-blue-400 flex items-center gap-2">🎓 Log in as Student 2</div>
+                                <div className="font-bold text-red-500 flex items-center gap-2">🎓 Log in as Student 2</div>
                                 <div className="text-xs text-[var(--text-secondary)] mt-0.5">sashank10293847@gmail.com</div>
                             </div>
-                            <span className="text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                            <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                         </button>
                     </div>
                 </div>

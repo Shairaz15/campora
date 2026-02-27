@@ -6,7 +6,7 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 glass sticky top-0 z-50">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-black text-sm">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center font-bold text-black text-sm">
             C
           </div>
           <span className="text-xl font-bold neon-text">Campora</span>
@@ -24,17 +24,20 @@ export default function LandingPage() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
         <div className="page-enter max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-sm font-medium mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600/10 border border-red-600/20 text-red-500 text-sm font-medium mb-8">
             <span className="pulse-dot"></span>
             Exclusively for .edu verified students
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Your Campus,{' '}
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">
-              Your Economy
-            </span>
-          </h1>
+          <div className="relative">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(225,6,0,0.08)_0%,transparent_70%)] pointer-events-none" />
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight relative">
+              Your Campus,{' '}
+              <span className="bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
+                Your Economy
+              </span>
+            </h1>
+          </div>
 
           <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-10 max-w-2xl mx-auto leading-relaxed">
             Buy, sell, swap, and connect — all within your verified campus community.

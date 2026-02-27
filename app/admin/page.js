@@ -45,9 +45,9 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {[
                     { label: 'Pending Escrow', value: stats.escrow, icon: '🛡️', color: 'text-orange-400' },
-                    { label: 'ID Verification', value: stats.verify, icon: '🪪', color: 'text-blue-400' },
+                    { label: 'ID Verification', value: stats.verify, icon: '🪪', color: 'text-red-500' },
                     { label: 'Total Users', value: stats.users, icon: '👥', color: 'text-green-400' },
-                    { label: 'Total Products', value: stats.products, icon: '📦', color: 'text-purple-400' },
+                    { label: 'Total Products', value: stats.products, icon: '📦', color: 'text-red-500' },
                 ].map((stat) => (
                     <div key={stat.label} className="card p-5">
                         <div className="text-2xl mb-2">{stat.icon}</div>
@@ -72,14 +72,14 @@ export default function AdminDashboard() {
                     )}
                 </Link>
 
-                <Link href="/admin/verify" className="card p-6 flex items-center gap-4 hover:border-blue-500/30" id="admin-verify-link">
-                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-2xl">🪪</div>
+                <Link href="/admin/verify" className="card p-6 flex items-center gap-4 hover:border-red-600/30" id="admin-verify-link">
+                    <div className="w-12 h-12 rounded-xl bg-red-600/10 flex items-center justify-center text-2xl">🪪</div>
                     <div>
                         <h3 className="font-semibold text-lg">ID Verification</h3>
                         <p className="text-sm text-[var(--text-secondary)]">Verify student identity cards</p>
                     </div>
                     {stats.verify > 0 && (
-                        <span className="ml-auto bg-blue-500 text-black text-sm font-bold px-3 py-1 rounded-full">
+                        <span className="ml-auto bg-red-600 text-black text-sm font-bold px-3 py-1 rounded-full">
                             {stats.verify}
                         </span>
                     )}

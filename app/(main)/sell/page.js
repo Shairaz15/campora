@@ -125,7 +125,7 @@ export default function SellPage() {
                                         <img src={src} alt="" className="w-full h-full object-cover" />
                                     </div>
                                 ))}
-                                <label className="w-20 h-20 rounded-lg border-2 border-dashed border-[var(--border-color)] flex items-center justify-center cursor-pointer hover:border-cyan-500/50 transition-colors">
+                                <label className="w-20 h-20 rounded-lg border-2 border-dashed border-[var(--border-color)] flex items-center justify-center cursor-pointer hover:border-red-600/50 transition-colors">
                                     <span className="text-2xl text-[var(--text-secondary)]">+</span>
                                     <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange} />
                                 </label>
@@ -163,11 +163,11 @@ export default function SellPage() {
                                 ].map((opt) => (
                                     <button key={opt.value} type="button" onClick={() => setForm({ ...form, transaction_type: opt.value })}
                                         className={`flex-1 p-3 text-center transition-all rounded-xl border-2 ${form.transaction_type === opt.value
-                                            ? 'border-cyan-400 bg-cyan-500/20 ring-2 ring-cyan-500/30 text-white'
+                                            ? 'border-red-500 bg-red-600/20 ring-2 ring-red-600/30 text-white'
                                             : 'border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-secondary)]'}`}>
                                         <div className="text-lg mb-1">{opt.label}</div>
                                         <div className="text-xs">{opt.desc}</div>
-                                        {form.transaction_type === opt.value && <div className="text-xs text-cyan-400 mt-1">✓</div>}
+                                        {form.transaction_type === opt.value && <div className="text-xs text-red-500 mt-1">✓</div>}
                                     </button>
                                 ))}
                             </div>
@@ -187,7 +187,7 @@ export default function SellPage() {
                                 {[{ v: 'in-campus', l: '📍 In-Campus' }, { v: 'escrow', l: '🛡️ Escrow' }].map((opt) => (
                                     <button key={opt.v} type="button" onClick={() => setForm({ ...form, location_type: opt.v })}
                                         className={`flex-1 p-3 text-center text-sm rounded-xl border-2 transition-all ${form.location_type === opt.v
-                                            ? 'border-cyan-400 bg-cyan-500/20 ring-2 ring-cyan-500/30 text-white'
+                                            ? 'border-red-500 bg-red-600/20 ring-2 ring-red-600/30 text-white'
                                             : 'border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-secondary)]'}`}>
                                         {opt.l} {form.location_type === opt.v && '✓'}
                                     </button>
@@ -228,12 +228,12 @@ export default function SellPage() {
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-medium truncate">{p.title}</h3>
                                         <div className="flex items-center gap-2 mt-1">
-                                            {p.price > 0 && <span className="text-sm text-cyan-400 font-semibold">₹{p.price}</span>}
+                                            {p.price > 0 && <span className="text-sm text-red-500 font-semibold">₹{p.price}</span>}
                                             <span className={`badge text-xs ${badge.color}`}>{badge.label}</span>
                                         </div>
                                     </div>
                                     <div className="flex gap-2 shrink-0">
-                                        <button onClick={() => handleEdit(p)} className="px-3 py-2 rounded-lg text-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20">✏️</button>
+                                        <button onClick={() => handleEdit(p)} className="px-3 py-2 rounded-lg text-sm bg-red-600/10 text-red-500 hover:bg-red-600/20">✏️</button>
                                         <button onClick={() => handleDelete(p.id)} className="px-3 py-2 rounded-lg text-sm bg-red-500/10 text-red-400 hover:bg-red-500/20">🗑️</button>
                                     </div>
                                 </div>

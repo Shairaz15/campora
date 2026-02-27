@@ -131,7 +131,7 @@ export default function SignupPage() {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center gap-2 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-black text-lg">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center font-bold text-black text-lg">
                             C
                         </div>
                         <span className="text-2xl font-bold neon-text">Campora</span>
@@ -146,15 +146,15 @@ export default function SignupPage() {
                     {['credentials', 'profile'].map((s, i) => (
                         <div key={s} className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step === s
-                                ? 'bg-cyan-500 text-black'
+                                ? 'bg-red-600 text-black'
                                 : ['credentials', 'profile'].indexOf(step) > i
-                                    ? 'bg-cyan-500/20 text-cyan-400'
+                                    ? 'bg-red-600/20 text-red-500'
                                     : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
                                 }`}>
                                 {i + 1}
                             </div>
                             {i < 1 && (
-                                <div className={`w-16 h-0.5 ${step === 'profile' ? 'bg-cyan-500/40' : 'bg-[var(--border-color)]'
+                                <div className={`w-16 h-0.5 ${step === 'profile' ? 'bg-red-600/40' : 'bg-[var(--border-color)]'
                                     }`} />
                             )}
                         </div>
@@ -168,7 +168,7 @@ export default function SignupPage() {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-                                        College Email * <span className="text-cyan-400 text-xs">(.edu only)</span>
+                                        College Email * <span className="text-red-500 text-xs">(.edu only)</span>
                                     </label>
                                     <input
                                         type="email"
@@ -328,7 +328,7 @@ export default function SignupPage() {
                 {step === 'credentials' && (
                     <p className="text-center text-sm text-[var(--text-secondary)] mt-6">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-cyan-400 hover:underline">
+                        <Link href="/login" className="text-red-500 hover:underline">
                             Sign in
                         </Link>
                     </p>

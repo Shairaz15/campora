@@ -79,7 +79,7 @@ export default function ProfilePage() {
 
             <div className="card p-8 mb-6">
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-red-500 via-red-600 to-purple-600 flex items-center justify-center text-3xl font-bold">
                         {profile.name?.[0]?.toUpperCase()}
                     </div>
                     <div>
@@ -91,7 +91,7 @@ export default function ProfilePage() {
                                 </span>
                             )}
                             {profile.role === 'admin' && (
-                                <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-xs font-medium">
+                                <span className="bg-red-700/20 text-red-500 px-3 py-1 rounded-full text-xs font-medium">
                                     Admin
                                 </span>
                             )}
@@ -112,7 +112,7 @@ export default function ProfilePage() {
                     ].map((stat) => (
                         <div key={stat.label} className="bg-[var(--bg-secondary)] rounded-xl p-4 text-center">
                             <div className="text-xl mb-1">{stat.icon}</div>
-                            <div className="text-2xl font-bold text-cyan-400">{stat.value}</div>
+                            <div className="text-2xl font-bold text-red-500">{stat.value}</div>
                             <div className="text-xs text-[var(--text-secondary)]">{stat.label}</div>
                         </div>
                     ))}
@@ -126,10 +126,10 @@ export default function ProfilePage() {
                             <span className="badge bg-green-500/20 text-green-400">🛡️ Verified Student</span>
                         )}
                         {stats.sells >= 1 && (
-                            <span className="badge bg-purple-500/20 text-purple-400">⭐ Active Seller</span>
+                            <span className="badge bg-red-700/20 text-red-500">⭐ Active Seller</span>
                         )}
                         {stats.buys + stats.sells + stats.swaps >= 5 && (
-                            <span className="badge bg-cyan-500/20 text-cyan-400">🏆 Top Trader</span>
+                            <span className="badge bg-red-600/20 text-red-500">🏆 Top Trader</span>
                         )}
                         {stats.buys + stats.sells + stats.swaps === 0 && !profile.is_verified && (
                             <span className="badge bg-gray-500/20 text-gray-400">🌱 New Member</span>

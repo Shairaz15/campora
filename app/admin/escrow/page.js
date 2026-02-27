@@ -58,7 +58,7 @@ export default function EscrowManagement() {
                         key={f}
                         onClick={() => setFilter(f)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === f
-                                ? 'bg-cyan-500 text-black'
+                                ? 'bg-red-600 text-black'
                                 : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-color)]'
                             }`}
                     >
@@ -125,7 +125,7 @@ export default function EscrowManagement() {
                                 )}
 
                                 {tx.status === 'admin_approved' && (
-                                    <div className="text-sm text-blue-400 bg-blue-500/10 rounded-lg p-3 text-center">
+                                    <div className="text-sm text-red-500 bg-red-600/10 rounded-lg p-3 text-center">
                                         ⏳ Waiting for buyer to confirm receipt
                                     </div>
                                 )}
